@@ -1,0 +1,10 @@
+stages:
+- deploy
+deploy:
+  stage: deploy
+  script:
+    - deploy
+  only:
+    - master
+  tags:
+    - shell
