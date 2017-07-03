@@ -32,7 +32,7 @@ appParseServer.listen(config.param.parseServer.port, function() {
 });
 
 // parse server dashbaord
-var allowInsecureHTTP = false;
+var allowInsecureHTTP = true;
 var ParseDashboard = require('parse-dashboard');
 var dashboard = new ParseDashboard({
     "apps": [
