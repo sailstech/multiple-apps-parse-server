@@ -1,0 +1,13 @@
+{
+  "parseServer": {
+    "appName":"IPSMAP",
+    "port":"1338",
+    "dashboard_port":"4041",
+    "databaseURI":"mongodb://root:3zei66iYkw@dds-bp1b9763ec7cfa341.mongodb.rds.aliyuncs.com:3717,dds-bp1b9763ec7cfa342.mongodb.rds.aliyuncs.com:3717/admin?replicaSet=mgset-2927151",
+    "cloud":"parse-server-cloud/main.js",
+    "appId":"srANu2SqvQXWB9ZEfuM8",
+    "masterKey":"cAQxnrtBCQTXDgGeuFRT",
+    "serverURL":"https://api.ipsmap.com/parse"
+  }
+
+}
