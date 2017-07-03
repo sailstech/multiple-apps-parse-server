@@ -32,6 +32,7 @@ appParseServer.listen(config.param.parseServer.port, function() {
 });
 
 // parse server dashbaord
+var allowInsecureHTTP = false;
 var ParseDashboard = require('parse-dashboard');
 var dashboard = new ParseDashboard({
     "apps": [
@@ -42,7 +43,7 @@ var dashboard = new ParseDashboard({
             "appName": config.param.parseServer.appName
         }
     ]
-});
+},allowInsecureHTTP);
 var appParseDashboard = express();
 
 appParseDashboard.use('/', dashboard);
