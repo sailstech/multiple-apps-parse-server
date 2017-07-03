@@ -3,12 +3,17 @@
   "parseServer": {
     "appName":"IPSMAP",
     "port":"1337",
-    "dashboard_port":"4040",
     "databaseURI":"mongodb://localhost:27017/parse",
     "cloud":"parse-server-cloud/main.js",
     "appId":"srANu2SqvQXWB9ZEfuM8",
     "masterKey":"cAQxnrtBCQTXDgGeuFRT",
     "serverURL":"http://localhost:1337/parse"
+  },
+  "parseServerDashboard": {
+    "serverURL":"https://api.ipsmap.com/parse",
+    "port":"4040",
+    "user":"ipsmap",
+    "password":"OJqZGTEqtc"
   }
 
 }

@@ -42,14 +42,21 @@ var dashboard = new ParseDashboard({
             "masterKey": config.param.parseServer.masterKey,
             "appName": config.param.parseServer.appName
         }
-    ]
+    ],
+    "users": [
+        {
+            "user":config.param.parseServerDashboard.user,
+            "pass":config.param.parseServerDashboard.password
+        }
+    ],
+    "useEncryptedPasswords": false
 },allowInsecureHTTP);
 var appParseDashboard = express();
 
 appParseDashboard.use('/', dashboard);
 
 var httpServer = require('http').createServer(appParseDashboard);
-httpServer.listen(config.param.parseServer.dashboard_port);
+httpServer.listen(config.param.parseServerDashboard.port);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
