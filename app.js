@@ -14,8 +14,7 @@ var config = require('./config');
 
 // parse server
 var ParseServer = require('parse-server').ParseServer;
-// parse server dashbaord
-var ParseDashboard = require('parse-dashboard');
+var appParseServer = express();
 
 var api = new ParseServer({
     appName:config.param.parseServer.appName,
@@ -26,13 +25,14 @@ var api = new ParseServer({
     serverURL: config.param.parseServer.serverURL // Don't forget to change to https if needed
 });
 
-//parse server
-app.use('/parse', api);
+appParseServer.use('/parse', api);
 
-app.listen(config.param.parseServer.port, function() {
-    console.log('parse-server-example running on port '+config.param.parseServer.port);
+appParseServer.listen(config.param.parseServer.port, function() {
+    console.log('parse-server running on port '+config.param.parseServer.port);
 });
-//parse server dashboard
+
+// parse server dashbaord
+var ParseDashboard = require('parse-dashboard');
 var dashboard = new ParseDashboard({
     "apps": [
         {
@@ -43,9 +43,11 @@ var dashboard = new ParseDashboard({
         }
     ]
 });
-app.use('/', dashboard);
+var appParseDashboard = express();
 
-var httpServer = require('http').createServer(app);
+appParseDashboard.use('/', dashboard);
+
+var httpServer = require('http').createServer(appParseDashboard);
 httpServer.listen(config.param.parseServer.dashboard_port);
 
 // view engine setup
