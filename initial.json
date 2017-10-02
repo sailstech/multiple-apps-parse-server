@@ -1,0 +1,11 @@
+{
+  "apps" : [{
+    "name"        : "parse-route",
+    "script"      : "./routeProxy.js",
+    "watch"       : false
+  },{
+    "name"        : "parse-dashboard",
+    "script"      : "./app-dashboard.js",
+    "watch"       : false
+  }]
+}

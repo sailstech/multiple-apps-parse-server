@@ -1,0 +1,20 @@
+{
+  "name": "multiple-apps-parse-server",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "body-parser": "~1.17.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "^2.6.9",
+    "express": "^4.15.5",
+    "http-proxy": "^1.16.2",
+    "http-proxy-rules": "^1.1.1",
+    "jade": "~1.11.0",
+    "js-sha1": "^0.4.1",
+    "morgan": "~1.8.1",
+    "parse-dashboard": "~1.1.0",
+    "parse-server": "^2.6.2",
+    "parse-server-s3-adapter": "^1.2.0",
+    "serve-favicon": "^2.4.5"
+  }
+}
