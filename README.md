@@ -22,7 +22,7 @@
 ## Install
 * add config.json (can copy from config_sample.json) 
 
-```js
+```
 {
   "portFrom":1337, //the port of the first app will be started from 1337 
   "maxInstances":100, //maxiumum number of parse apps (<100 is suggested)  
@@ -60,7 +60,7 @@
 ```
 newInstance will auto start several processes by using pm2.
  If successfully, you will see
-```sh
+```
 This is firstly start parse dashboard, admin is created.
 ---------------------------------------------------------
 dashboard URL: https://app.xxx.com:4040
@@ -89,6 +89,40 @@ we use pm2 watch method to monitor the change of cloud code folder, therefore,
  once the main.js or other files in the folder are modified, the corresponding parse app will be restart.
 Each app developer can deploy their cloud code by using git server(not include here).
 * set load balance or dns server to your own domain, then enjoy!
+
+## Important PM2 Script File
+* initial.json - route-proxy and parse-dashboard
+* appServers.json - all parse apps
+
+There are two processes in inital.json, one is route-proxy, the other is parse-dashboard,
+to start/stop/kill these two processes, 
+```
+pm2 start/stop/kill initial.json
+```
+appServers.json contains all parse apps processes, To start/stop/kill all parse apps, 
+```
+pm2 start/stop/kill appServers.json
+```
+
+## Performance 
+### pm2 status at a glance
+```
+┌─────────────────┬────┬──────┬───────┬────────┬─────────┬────────┬─────┬───────────┬─────────┬──────────┐
+│ App name        │ id │ mode │ pid   │ status │ restart │ uptime │ cpu │ mem       │ user    │ watching │
+├─────────────────┼────┼──────┼───────┼────────┼─────────┼────────┼─────┼───────────┼─────────┼──────────┤
+│ firstapp        │ 0  │ fork │ 65458 │ online │ 0       │ 52s    │ 0%  │ 73.9 MB   │ richard │ enabled  │
+│ parse-dashboard │ 2  │ fork │ 65564 │ online │ 2       │ 37s    │ 0%  │ 53.4 MB   │ richard │ disabled │
+│ parse-route     │ 1  │ fork │ 65561 │ online │ 2       │ 37s    │ 0%  │ 40.6 MB   │ richard │ disabled │
+│ secondapp       │ 3  │ fork │ 65485 │ online │ 0       │ 44s    │ 0%  │ 74.9 MB   │ richard │ enabled  │
+│ thirdapp        │ 4  │ fork │ 65533 │ online │ 0       │ 38s    │ 3%  │ 76.5 MB   │ richard │ enabled  │
+└─────────────────┴────┴──────┴───────┴────────┴─────────┴────────┴─────┴───────────┴─────────┴──────────┘
+
+```
+each app occupies around 70MB memory size when no traffic. The 4-GB ram size server can handle at least 40 low-traffic 
+parse apps.
+
+
+
 
 ## Clean environment
 if you are in development stage, and need to have a clean environment. 
