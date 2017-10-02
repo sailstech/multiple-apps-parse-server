@@ -22,7 +22,7 @@
 ## Install
 * add config.json (can copy from config_sample.json) 
 
-```json
+```js
 {
   "portFrom":1337, //the port of the first app will be started from 1337 
   "maxInstances":100, //maxiumum number of parse apps (<100 is suggested)  
