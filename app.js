@@ -21,7 +21,7 @@ var appParseServer = express();
 var api = new ParseServer({
     appName:config.customer,
     databaseURI: config.parseServer.databaseURI, // Connection string for your MongoDB database
-    collectionPrefix:config.customer,
+    collectionPrefix:config.parseServer.appId,
     cloud: config.parseServer.cloud, // Absolute path to your Cloud Code
     appId: config.parseServer.appId,
     masterKey: config.parseServer.masterKey, // Keep this key secret!
