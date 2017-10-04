@@ -13,7 +13,6 @@
  * pm2 
 
 ## Architecture
- * use Node.JS + Express
  * [Parse Server](https://github.com/parse-community/parse-server) 
  * [Parse Server Dashboard](https://github.com/parse-community/parse-dashboard) 
  * each parse app has different port and use [node-http-proxy](https://github.com/nodejitsu/node-http-proxy) to handle port route.
@@ -90,7 +89,7 @@ we use pm2 watch method to monitor the change of cloud code folder, therefore,
 Each app developer can deploy their cloud code by using git server(not include here).
 * set load balance or dns server to your own domain, then enjoy!
 
-## Important PM2 Script File
+## PM2 Script File
 * initial.json - route-proxy and parse-dashboard
 * appServers.json - all parse apps
 
