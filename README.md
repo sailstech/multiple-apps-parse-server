@@ -1,10 +1,14 @@
 # Multiple Apps Parse Server
 
+## Changelog
+ * add app and customer field, so that customer can handle multiple apps(2017/10/30). 
+  
 ## Objective
  * run and manage multiple parse apps (instances) in **a server** and using **a single port**.
  * one code, one database, create a parse app in one second.
  * parse dashboard integrated, each app's manager can log into parse dashboard to manage their app. 
  * one admin account in parse dashboard to manage all apps
+ * customers(clients) can manage their own apps (2017/10/30)
 
 
 ## Prerequisites
@@ -55,9 +59,12 @@
 
 * create the first parse app
 ```sh
- customer=firstapp node newInstance.js
+ app=firstapp customer=c1 node newInstance.js
 
 ```
+customer field (optional) , each customer can have multiple apps and can manage these apps with 
+the same username and password in parse dashboard.   
+
 newInstance will auto start several processes by using pm2.
  If successfully, you will see
 ```
@@ -68,20 +75,20 @@ username: admin
 password: *******************
 ---------------------------------------------------------
 No.1 parse server instance is created!
-The customer information is shown as following, you can copy & paste to your customer
+The app and customer information are shown as following, you can copy & paste to your customer
 ---------------------------------------------------------
 api URL: https://app.xxx.com/firstapp
 application id: ***rEIIPpggXbKJCy***
 master key: ***ZepMVqJMRGuuXd***  //please keep master key in secret
 dashboard URL: https://app.xxx.com:4040
-dashboard username:firstapp
+dashboard username:c1
 dashboard password: **********  //please keep this password in secret
 ---------------------------------------------------------
 ```
  if you want to test locally, try `http://localhost:3000/firstapp` for the first app parse server and
  `http://localhost:4040` for parse dashboard.
  
- you can create the second app by `customer=secondapp node newInstance.js`, and so on.
+ you can create the second app by `app=secondapp customer=c1 node newInstance.js`, and so on.
   
 * cloud code monitoring
    
@@ -95,13 +102,13 @@ Each app developer can deploy their cloud code by using git server(not include h
 * appServers.json - all parse apps
 
 There are two processes in inital.json, one is route-proxy, the other is parse-dashboard,
-to start/stop/kill these two processes, 
+to start/stop these two processes, 
 ```
-pm2 start/stop/kill initial.json
+pm2 start/stop initial.json
 ```
-appServers.json contains all parse apps processes, To start/stop/kill all parse apps, 
+appServers.json contains all parse apps processes, To start/stop all parse apps, 
 ```
-pm2 start/stop/kill appServers.json
+pm2 start/stop appServers.json
 ```
 
 ## Performance 

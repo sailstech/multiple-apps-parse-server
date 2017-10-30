@@ -2,12 +2,13 @@ var config = require('./config.json');
 var globalURL = config.globalURI;
 var databaseURI = config.databaseURI;
 var localIp = 'http://localhost';
-var customer = process.env.customer||'test';
+var customer = process.env.customer||makeid(10);
+var appName = process.env.app||'testApp';
 var psPort = (Number(process.env.no)+1337) || '1337';
 var fs = require('fs');
-var customerProfile;
-var customerFileFolder = "./configs/";
-var customerFilePath = customerFileFolder + customer+ ".json";
+var appProfile;
+var appFileFolder = "./configs/";
+var appFilePath = appFileFolder + appName + ".json";
 var cloudCodePath = config.cloudCodeFolder;
 var instanceCount=0;
 
@@ -15,16 +16,17 @@ const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 var dashboardPassword;
 var dashboardAdminPassword;
-var generateInstanceJson = function(customer) {
+var generateInstanceJson = function() {
     return json = {
         "customer":customer,
+        "app":appName,
         "enable":true,
         "serverURL":"http://localhost",
-        "publicServerURL":globalURL+"/"+customer,
+        "publicServerURL":globalURL+"/"+appName,
         "parseServer": {
             "port":psPort,
             "databaseURI":databaseURI,
-            "cloud":cloudCodePath+customer+"/main.js",
+            "cloud":cloudCodePath+appName+"/main.js",
             "appId":makeid(20),
             "masterKey":makeid(20)
         }
@@ -32,9 +34,9 @@ var generateInstanceJson = function(customer) {
 
 };
 
-function pm2StartParseServer(customer) {
+function pm2StartParseServer(appName) {
     return new Promise(async function(res,rej) {
-        const { stdout, stderr } = await exec('pm2 start appServers.json --only '+customer);
+        const { stdout, stderr } = await exec('pm2 start appServers.json --only '+appName);
         if(stderr) {
             console.log('stderr:', stderr);
             rej();
@@ -95,13 +97,13 @@ function updatePm2AppServersJson() {
     return new Promise(function(res,rej) {
         fs.readFile('./appServers.json',function(err,data) {
             let app = {
-              name:customer,
+              name:appName,
               script:"./app.js",
               watch:[
-                  cloudCodePath+customer
+                  cloudCodePath+appName
               ],
                 env:{
-                    customer:customer,
+                    app:appName,
                     AWS_ACCESS_KEY_ID:config.S3FilesAdapter.accessKey,
                     AWS_SECRET_ACCESS_KEY:config.S3FilesAdapter.secretKey
                 }
@@ -129,10 +131,10 @@ function createCloudCodeFiles() {
     if (!fs.existsSync(cloudCodePath)){
         fs.mkdirSync(cloudCodePath);
     }
-    if (!fs.existsSync(cloudCodePath+customer)){
-        fs.mkdirSync(cloudCodePath+customer);
+    if (!fs.existsSync(cloudCodePath+appName)){
+        fs.mkdirSync(cloudCodePath+appName);
     }
-    fs.closeSync(fs.openSync(cloudCodePath+customer+"/main.js", 'w'));
+    fs.closeSync(fs.openSync(cloudCodePath+appName+"/main.js", 'w'));
 }
 function updateParseDashboardJson() {
     return new Promise(function(res,rej) {
@@ -146,42 +148,57 @@ function updateParseDashboardJson() {
                 dashboard = JSON.parse(data);
             }
             let app = {
-                serverURL:customerProfile.publicServerURL,
-                appId:customerProfile.parseServer.appId,
-                masterKey:customerProfile.parseServer.masterKey,
-                appName:customerProfile.customer
+                serverURL:appProfile.publicServerURL,
+                appId:appProfile.parseServer.appId,
+                masterKey:appProfile.parseServer.masterKey,
+                appName:appProfile.app
             };
-            dashboardPassword = makeid(10);
-            let user = {
-                user:customerProfile.customer,
-                pass:dashboardPassword,
-                apps:[{
-                    appId:customerProfile.parseServer.appId
-                }
-                ]
-            };
+            dashboard.apps.push(app);
+
             var found=false;
             for(let i in dashboard.users) {
-                if(dashboard.users[i].user==='admin') {
+                if(dashboard.users[i].user===customer) {
+                    dashboardPassword = dashboard.users[i].pass;
                     dashboard.users[i].apps.push({
-                        appId:customerProfile.parseServer.appId
+                        appId:appProfile.parseServer.appId
                     });
                     found=true;
                 }
             }
-            dashboard.apps.push(app);
+            if(!found) {
+                dashboardPassword = makeid(10);
+                let user = {
+                    user:appProfile.customer,
+                    pass:dashboardPassword,
+                    apps:[{
+                        appId:appProfile.parseServer.appId
+                    }
+                    ]
+                };
+                dashboard.users.push(user);
+            }
+
+            found=false;
+            for(let i in dashboard.users) {
+                if(dashboard.users[i].user==='admin') {
+                    dashboard.users[i].apps.push({
+                        appId:appProfile.parseServer.appId
+                    });
+                    found=true;
+                }
+            }
             if(!found) {
                 dashboardAdminPassword = makeid(20);
                 var u = {
                     user:"admin",
                     pass:dashboardAdminPassword,
                     apps:[
-                        {appId:customerProfile.parseServer.appId}
+                        {appId:appProfile.parseServer.appId}
                     ]
                 };
                 dashboard.users.push(u);
             }
-            dashboard.users.push(user);
+
             fs.writeFile('./dashboards.json',JSON.stringify(dashboard),function (err, data) {
                 if(!err) {
                     res();
@@ -194,12 +211,12 @@ function updateParseDashboardJson() {
     });
 }
 new Promise(function (resolve, reject) {
-    if (!fs.existsSync(customerFileFolder)){
-        fs.mkdirSync(customerFileFolder);
+    if (!fs.existsSync(appFileFolder)){
+        fs.mkdirSync(appFileFolder);
     }
-    fs.stat(customerFilePath, function(err, stat) {
+    fs.stat(appFilePath, function(err, stat) {
         if(err == null) {
-            console.log('customer already exists');
+            console.log('app already exists');
             reject();
         } else if(err.code == 'ENOENT') {
             resolve();
@@ -222,9 +239,9 @@ new Promise(function (resolve, reject) {
                     psPort = config.portFrom + Number(count);
                 }
                 setCount(count);
-                customerProfile = generateInstanceJson(customer);
-                fs.writeFile(customerFilePath,
-                    JSON.stringify(customerProfile), function (err,data) {
+                appProfile = generateInstanceJson();
+                fs.writeFile(appFilePath,
+                    JSON.stringify(appProfile), function (err,data) {
                         if (err) {
                             throw new Error(err);
                         }
@@ -244,7 +261,7 @@ new Promise(function (resolve, reject) {
     return updatePm2AppServersJson();
 }).then(function(){
     //start server
-    return pm2StartParseServer(customer);
+    return pm2StartParseServer(appName);
 }).then(function(){
     //update parse dashboard server
     return updateParseDashboardJson();
@@ -257,7 +274,7 @@ new Promise(function (resolve, reject) {
             if (!err) {
                 route = JSON.parse(data);
             }
-            route[".*/"+customer]=localIp+":"+psPort;
+            route[".*/"+appName]=localIp+":"+psPort;
             fs.writeFile('./route-proxy.json',JSON.stringify(route),function (err, data) {
                 if(!err) {
                     return pm2RestartRoute().then(function(){
@@ -281,13 +298,14 @@ new Promise(function (resolve, reject) {
         console.log("---------------------------------------------------------");
     }
     console.log("No."+instanceCount+" parse server instance is created!");
-    console.log("The customer information is shown as following, you can copy & paste to your customer");
+    console.log("The app and customer information are shown as following, you can copy & paste to your customer");
     console.log("---------------------------------------------------------");
-    console.log("api URL: " + customerProfile.publicServerURL);
-    console.log("application id: " + customerProfile.parseServer.appId);
-    console.log("master key: "+customerProfile.parseServer.masterKey +'  //please keep master key in secret');
+    console.log("app name: " + appProfile.app);
+    console.log("api URL: " + appProfile.publicServerURL);
+    console.log("application id: " + appProfile.parseServer.appId);
+    console.log("master key: "+appProfile.parseServer.masterKey +'  //please keep master key in secret');
     console.log("dashboard URL: "+config.parseDashboardURI);
-    console.log("dashboard username:" + customerProfile.customer);
+    console.log("dashboard username:" + appProfile.customer);
     console.log("dashboard password: "+dashboardPassword +'  //please keep this password in secret');
     console.log("---------------------------------------------------------");
 

@@ -2,11 +2,11 @@ var express = require('express');
 
 // config
 var config = {};
-if(process.env.customer) {
-    config = require('./configs/'+process.env.customer);
+if(process.env.app) {
+    config = require('./configs/'+process.env.app);
 }
 if(!config.enable) {
-    console.log(config.customer+" is disabled!");
+    console.log(config.app+" is disabled!");
     return false;
 }
 var globalConfig = require('./config.json');
@@ -19,7 +19,7 @@ var ParseServer = require('parse-server').ParseServer;
 var appParseServer = express();
 
 var api = new ParseServer({
-    appName:config.customer,
+    appName:config.app,
     databaseURI: config.parseServer.databaseURI, // Connection string for your MongoDB database
     collectionPrefix:config.parseServer.appId,
     cloud: config.parseServer.cloud, // Absolute path to your Cloud Code
@@ -27,7 +27,7 @@ var api = new ParseServer({
     masterKey: config.parseServer.masterKey, // Keep this key secret!
     serverURL: config.serverURL+":"+config.parseServer.port+"/", // Don't forget to change to https if needed
     publicServerURL: config.publicServerURL+"/",
-    logsFolder:'./logs/'+config.customer+"/",
+    logsFolder:'./logs/'+config.app+"/",
     filesAdapter: (process.env.AWS_ACCESS_KEY_ID ? new S3Adapter(globalConfig.S3FilesAdapter.bucket) : null)
 });
 
