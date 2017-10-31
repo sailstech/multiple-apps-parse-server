@@ -5,6 +5,7 @@
   "parseDashboardURI":"https://app.xxx.com:4040",
   "globalURI":"https://app.xxx.com",
   "databaseURI":"mongodb://localhost:27017/",
+  "useCollectionPrefix":true,
   "cloudCodeFolder":"./cloudcode/",
   "internalProxyPort":3000,
   "S3FilesAdapter":{

@@ -1,9 +1,12 @@
 var config = require('./config.json');
 var globalURL = config.globalURI;
-var databaseURI = config.databaseURI;
 var localIp = 'http://localhost';
 var customer = process.env.customer||makeid(10);
 var appName = process.env.app||'testApp';
+var usePrefix = config.useCollectionPrefix === undefined ? true:config.useCollectionPrefix;
+console.log(usePrefix);
+var databaseURI = config.databaseURI+(usePrefix?'':'/'+appName);
+
 var psPort = (Number(process.env.no)+1337) || '1337';
 var fs = require('fs');
 var appProfile;
@@ -19,6 +22,7 @@ var dashboardAdminPassword;
 var generateInstanceJson = function() {
     return json = {
         "customer":customer,
+        "useCollectionPrefix":usePrefix,
         "app":appName,
         "enable":true,
         "serverURL":"http://localhost",

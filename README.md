@@ -1,6 +1,8 @@
 # Multiple Apps Parse Server
 
 ## Changelog
+ * collectionPrefix for mongodb can be optional (2017/10/31).
+ * be able to enable/disable single parse server app(2017/10/31). 
  * add app and customer field, so that customer can handle multiple apps(2017/10/30). 
   
 ## Objective
@@ -96,6 +98,16 @@ we use pm2 watch method to monitor the change of cloud code folder, therefore,
 Each app developer can deploy their cloud code by using git server(not include here).
 * set load balance or dns server to your own domain, then enjoy!
 
+## Enable/Disable One of Parse Server Apps
+ you can enable/disable one of parse server apps by using the following command
+```
+app=AppName enable=true/false node setapp
+```
+
+## MongoDB CollectionPrefix
+parse server supports collection prefix for mongodb, so that you can use one database link for multiple parse server apps.
+if you want to turn off collection prefix, set "useCollectionPrefix":false in config.json.
+ 
 ## PM2 Script File
 * initial.json - route-proxy and parse-dashboard
 * appServers.json - all parse apps
