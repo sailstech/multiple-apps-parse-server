@@ -14,7 +14,7 @@
 
 
 ## Prerequisites
- * Node.JS 4.8.0 or above
+ * Node.JS 7.6 or above
  * MongoDB (if run in local)
  * pm2 
 
